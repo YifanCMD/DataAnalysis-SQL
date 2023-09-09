@@ -1,5 +1,7 @@
 # DataAnalysis-SQL
 
+>***There are 9 demos showing the basic sql skills used for analyzing data.***
+
 ## DEMO 1
 The `books` table has the following columns:
 
