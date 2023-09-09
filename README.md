@@ -1,2 +1,2 @@
 # DataAnalysis-SQL
-Demos for basic sql skills
+*Demos for basic sql skills*
