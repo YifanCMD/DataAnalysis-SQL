@@ -144,3 +144,163 @@ LEFT JOIN employees
 ```
 ![image](https://github.com/YifanCMD/DataAnalysis-SQL/assets/96324028/5a681db5-4e4a-4726-9c99-ae25f62a2f9f)
 
+## DEMO 5
+The `math_students` and `english_students` tables have the following columns:
+
+`student_id` - the student id
+
+`grade` - the grade level of the student
+
+`first_name` - the student’s first name
+
+`last_name` - the student’s last name
+
+- Using a subquery, get all students in math who are also enrolled in english.
+```
+SELECT *
+FROM math_students
+WHERE student_id IN (
+  SELECT student_id
+  FROM english_students
+);
+```
+![image](https://github.com/YifanCMD/DataAnalysis-SQL/assets/96324028/5a25f2fd-22b8-4aae-a1d3-cab02be525af)
+
+- Using a subquery, find out which students in math are in the same grade level as the student with id `7`.
+```
+SELECT *
+FROM math_students
+WHERE grade IN (
+  SELECT grade
+  FROM math_students
+  WHERE student_id = 7
+);
+```
+![image](https://github.com/YifanCMD/DataAnalysis-SQL/assets/96324028/efbcc80b-bd18-4540-959e-bcd482e0dd67)
+
+- Using a subquery, find all students enrolled in english class who are not also enrolled in math class.
+```
+SELECT *
+FROM english_students
+WHERE student_id
+NOT IN (
+  SELECT student_id
+  FROM math_students
+);
+```
+![image](https://github.com/YifanCMD/DataAnalysis-SQL/assets/96324028/0aeb2e0b-710e-4f71-9752-889429fa5e37)
+
+- Using a subquery, find out what grade levels are represented in both the math and english classes.
+```
+SELECT grade
+FROM math_students
+WHERE EXISTS (
+  SELECT grade
+  FROM english_students
+);
+```
+![image](https://github.com/YifanCMD/DataAnalysis-SQL/assets/96324028/a90241a8-7ac3-4330-b9d2-6c3f51a9f0c1)
+
+## DEMO 6
+The `box_office` table has the following columns:
+
+`id` - the id of each row
+
+`title` - the title of the movie
+
+`week` - the week following the film’s release
+
+`gross` - the gross for that week
+
+`to_date_gross` - the total gross of the movie up to each week
+
+- Using a window function with `PARTITION BY`, get the running total in gross for each movie up to the current week and display it next to the current week column along with the `title`, `week`, and `gross` columns.
+```
+SELECT title, week, gross, 
+  SUM(gross) OVER (
+    PARTITION BY title 
+    ORDER BY week
+  ) AS 'running_total_gross'
+FROM box_office;
+```
+![image](https://github.com/YifanCMD/DataAnalysis-SQL/assets/96324028/41930df3-adf3-428b-8b68-cbc36cebec4c)
+
+- Write a query using a window function with ROW_NUMBER and ORDER BY to see where each row falls in the amount of gross.
+```
+SELECT ROW_NUMBER()
+OVER (
+  ORDER BY gross
+) AS 'row_num', title, week, gross
+FROM box_office;
+```
+![image](https://github.com/YifanCMD/DataAnalysis-SQL/assets/96324028/da87d3bf-ecb3-44b2-be60-6d46f9ee32d2)
+
+## DEMO 7
+The `orders` table has the following columns:
+
+`id` - the order id
+
+`product_id` - the product id
+
+`price` - the price of the individual product item
+
+`quantity` - the quantity of items in the order
+
+- Given an orders table, calculate the price times quantity of each order. Include the id and product_id columns in the result.
+```
+SELECT id, product_id, price * quantity
+FROM orders;
+```
+![image](https://github.com/YifanCMD/DataAnalysis-SQL/assets/96324028/8b579608-76a5-4f04-b1c6-7bf679fc0bdf)
+
+## DEMO 8
+The `weather` table has the following columns:
+
+`id` - the id of each entry
+
+`date` - the date of each entry
+
+`high` - the high temperature of the date, in Fahrenheit
+
+`low` - the low temperature of the date, in Fahrenheit
+
+- Utilize `CAST` to calculate the average of the `low` and `high` temperatures for each date such that the result is of type `REAL`. Select the `date` column and alias this result column as ‘average’.
+```
+SELECT date, (CAST(high AS 'REAL') + 
+  CAST(low AS 'REAL')) / 2.0 AS 'average'
+FROM weather;
+```
+![image](https://github.com/YifanCMD/DataAnalysis-SQL/assets/96324028/cac1be41-6504-4f56-931d-86510c0a41ec)
+
+## DEMO 9
+The `purchases` table has the following columns:
+
+`purchase_id` - the id of the purchase
+
+`purchase_date` - the date of the purchase
+
+- After a purchase is created, it can be returned within 7 days for a full refund. Using modifiers, get the date of each purchase offset by 7 days in the future.
+```
+SELECT purchase_id, DATE(purchase_date, '+7 days')
+FROM purchases;
+```
+![image](https://github.com/YifanCMD/DataAnalysis-SQL/assets/96324028/9aa23b70-f8dc-43b5-8de6-b5dbe12d3283)
+
+- Get the hour that each purchase was made. Which hour had the most purchases made?
+```
+SELECT strftime('%H',purchase_date) 
+     AS 'Hour',
+   COUNT(strftime('%H',purchase_date)) 
+     AS 'Purchases'
+FROM purchases 
+GROUP BY 1 
+ORDER BY 2 desc;
+```
+![image](https://github.com/YifanCMD/DataAnalysis-SQL/assets/96324028/72480ba1-f38a-46f5-ac4e-a05de62090a0)
+
+- Using string formatting and substitutions, get the month and day for each purchase in the form ‘mm-dd’. Give this new column a name of ‘reformatted’.
+```
+SELECT STRFTIME('%m-%d', purchase_date) AS 'reformatted'
+FROM purchases;
+```
+![image](https://github.com/YifanCMD/DataAnalysis-SQL/assets/96324028/ce98a367-65fd-4bbb-895b-31c640c0ee95)
