@@ -1,4 +1,4 @@
-# DataAnalysis-SQL
+# DataAnalysis-SQL_Basics
 
 >***There are 9 demos showing the basic SQL skills used for analyzing data.***
 
